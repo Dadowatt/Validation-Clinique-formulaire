@@ -75,9 +75,9 @@ function validateEmail() {
 // Validation du domaine
 function validateDomain() {
     const domaines = ["Front-End", "Back-End", "Design/UX", "Data"];
-    const selectedValue = domainSelect.value
+    const selectedValue = domainSelect.value;
 
-    if (selectedValue.value === "" && !domaines.includes(selectedValue)) {
+    if (selectedValue === "" && !domaines.includes(selectedValue)) {
         showError(domainSelect, "Veuillez sélectionner un domaine parmi la liste.");
         return false;
     }
