@@ -23,7 +23,6 @@ function showError(element, message) {
 }
 
 
-
 //  Affiche d'un état de succès
 function showSuccess(element) {
     element.classList.remove("is-invalid");
@@ -73,11 +72,13 @@ function validateEmail() {
 }
 
 
-
 // Validation du domaine
 function validateDomain() {
-    if (domainSelect.value === "") {
-        showError(domainSelect, "Veuillez sélectionner un domaine.");
+    const domaines = ["Front-End", "Back-End", "Design/UX", "Data"];
+    const selectedValue = domainSelect.value
+
+    if (selectedValue.value === "" && !domaines.includes(selectedValue)) {
+        showError(domainSelect, "Veuillez sélectionner un domaine parmi la liste.");
         return false;
     }
 
@@ -169,19 +170,17 @@ function createProfileCard() {
     profileCardContainer.innerHTML = `
         <div class="card shadow profile-card">
 
+            <div class="card-header">
+            <h3 class="mb-3">${fullnameInput.value.trim()}</h3>
+            </div>
+
             <div class="card-body">
 
-                <h3 class="mb-3">${fullnameInput.value.trim()}</h3>
-
-                <p><strong>Email :</strong>${emailInput.value.trim()}</p>
-
-                <p><strong>Domaine :</strong>${domainSelect.value}</p>
-
-                <p><strong>Rythme :</strong>${selectedWorkStyle}</p>
-
-                <p><strong>Passions :</strong>${selectedInterests.join(", ")}</p>
-
-                <p><strong>Présentation :</strong>${bioTextarea.value.trim()}</p>
+                <p><strong>Email :</strong> ${emailInput.value.trim()}</p>
+                <p><strong>Domaine :</strong> ${domainSelect.value}</p>
+                <p><strong>Rythme :</strong> ${selectedWorkStyle}</p>
+                <p><strong>Passions :</strong> ${selectedInterests.join(", ")}</p>
+                <p><strong>Présentation :</strong> ${bioTextarea.value.trim()}</p>
 
             </div>
         </div>
