@@ -35,23 +35,20 @@ function showSuccess(element) {
 
 // Validation du nom et prénom
 function validateName() {
-    const rawValue = fullnameInput.value;
-    const value = rawValue.trim().replace(/\s+/g, " ");
-    const words = value.split(" ");
+    const value = fullnameInput.value.trim().replace(/\s+/g, " ");
+    fullnameInput.value = value;
 
-    if (words.length < 2) {
-        showError(fullnameInput, "Veuillez saisir un prénom et un nom.");
+    if (value.length < 3) {
+        showError(fullnameInput, "Veuillez saisir au moins 3 caractères.");
         return false;
     }
 
-    const nameRegex = /^[A-Za-zÀ-ÿ]+(?:[-'][A-Za-zÀ-ÿ]+)*$/;
-    const isValidWords = words.every(word => nameRegex.test(word));
+    const nameRegex = /^[A-Za-zÀ-ÿ\s'-]+$/;
 
-    if (!isValidWords) {
-        showError(fullnameInput, "Nom invalide (lettres uniquement, min 2 caractères par partie).");
+    if (!nameRegex.test(value)) {
+        showError(fullnameInput, "Seules les lettres, espaces, apostrophes et tirets sont autorisés.");
         return false;
     }
-
     showSuccess(fullnameInput);
     return true;
 }
@@ -63,7 +60,7 @@ function validateEmail() {
     emailInput.value = value;
     const emailRegex = /^[a-zA-Z]{2,}(?:[._-][a-zA-Z0-9]{2,})*@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(value)) {
-        showError(emailInput,"Email invalide.");
+        showError(emailInput, "Email invalide.");
         return false;
     }
 
@@ -75,9 +72,8 @@ function validateEmail() {
 // Validation du domaine
 function validateDomain() {
     const domaines = ["Front-End", "Back-End", "Design/UX", "Data"];
-    const selectedValue = domainSelect.value;
 
-    if (selectedValue === "" && !domaines.includes(selectedValue)) {
+    if (!domaines.includes(domainSelect.value)) {
         showError(domainSelect, "Veuillez sélectionner un domaine parmi la liste.");
         return false;
     }
@@ -89,34 +85,44 @@ function validateDomain() {
 
 //  Validation du choix de rythme 
 function validateWorkStyle() {
-    const selected = [...radios].some(radio => radio.checked);
+    const workStyles = ["Early Bird", "Night Owl"];
 
-    if (!selected) {
-        radioError.textContent = "Veuillez sélectionner une option.";
+    const selectedRadio = [...radios].find(radio => radio.checked);
+
+    if (!selectedRadio || !workStyles.includes(selectedRadio.value)) {
+        radioError.textContent = "Veuillez sélectionner une option parmi la liste.";
+
         workStyleGroup.classList.remove("success-group");
         workStyleGroup.classList.add("error-group");
+
         return false;
     }
 
     radioError.textContent = "";
+
     workStyleGroup.classList.remove("error-group");
     workStyleGroup.classList.add("success-group");
+
     return true;
 }
 
 
 //  Validation des centres d’intérêt
 function validateInterests() {
+    const allowedInterests = ["Veille Tech", "Gaming", "Sport", "Musique", "Lecture"];
+
     const selected = [...interests].filter(cb => cb.checked);
 
-    if (selected.length < 2) {
-        checkboxError.textContent = "Choisissez au moins 2 centres d'intérêt.";
+    const allValid = selected.every(cb =>allowedInterests.includes(cb.value));
+
+    if (selected.length < 2 || !allValid) {
+        checkboxError.textContent = "Choisissez au moins 2 centres d'intérêt valides.";
 
         interestsGroup.classList.remove("success-group");
         interestsGroup.classList.add("error-group");
+
         return false;
     }
-
     checkboxError.textContent = "";
 
     interestsGroup.classList.remove("error-group");
@@ -164,7 +170,6 @@ function updateCounter() {
 // Génère la carte de profil après validation complète
 function createProfileCard() {
     const selectedWorkStyle = document.querySelector('input[name="workStyle"]:checked').value;
-
     const selectedInterests = [...interests].filter(cb => cb.checked).map(cb => cb.value);
 
     profileCardContainer.innerHTML = `
