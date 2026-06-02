@@ -166,26 +166,22 @@ function updateCounter() {
 }
 
 
-
 // Génère la carte de profil après validation complète
-function createProfileCard() {
-    const selectedWorkStyle = document.querySelector('input[name="workStyle"]:checked').value;
-    const selectedInterests = [...interests].filter(cb => cb.checked).map(cb => cb.value);
-
+function createProfileCard(profile) {
     profileCardContainer.innerHTML = `
         <div class="card shadow profile-card">
 
             <div class="card-header">
-            <h3 class="mb-3">${fullnameInput.value.trim()}</h3>
+                <h3 class="mb-3">${profile.fullname}</h3>
             </div>
 
             <div class="card-body">
 
-                <p><strong>Email :</strong> ${emailInput.value.trim()}</p>
-                <p><strong>Domaine :</strong> ${domainSelect.value}</p>
-                <p><strong>Rythme :</strong> ${selectedWorkStyle}</p>
-                <p><strong>Passions :</strong> ${selectedInterests.join(", ")}</p>
-                <p><strong>Présentation :</strong> ${bioTextarea.value.trim()}</p>
+                <p><strong>Email :</strong> ${profile.email}</p>
+                <p><strong>Domaine :</strong> ${profile.domain}</p>
+                <p><strong>Rythme :</strong> ${profile.workStyle}</p>
+                <p><strong>Passions :</strong> ${profile.interests.join(", ")}</p>
+                <p><strong>Présentation :</strong> ${profile.bio}</p>
 
             </div>
         </div>
@@ -223,18 +219,46 @@ form.addEventListener("submit", event => {
     const isInterestsValid = validateInterests();
     const isBioValid = validateBio();
 
-    const isValid = isNameValid && isEmailValid && isDomainValid &&
-        isWorkStyleValid && isInterestsValid && isBioValid;
+    const isValid =
+        isNameValid &&
+        isEmailValid &&
+        isDomainValid &&
+        isWorkStyleValid &&
+        isInterestsValid &&
+        isBioValid;
 
     if (!isValid) return;
 
-    createProfileCard();
+    const profile = {
+        fullname: fullnameInput.value.trim(),
+        email: emailInput.value.trim(),
+        domain: domainSelect.value,
+        workStyle: document.querySelector('input[name="workStyle"]:checked')?.value,
+        interests: [...interests]
+            .filter(cb => cb.checked)
+            .map(cb => cb.value),
+        bio: bioTextarea.value.trim()
+    };
+
+    localStorage.setItem("userProfile", JSON.stringify(profile));
+    createProfileCard(profile);
     form.reset();
 
-    document.querySelectorAll(".is-valid").forEach(el => el.classList.remove("is-valid"));
+    document.querySelectorAll(".is-valid").forEach(el =>
+        el.classList.remove("is-valid")
+    );
 
     workStyleGroup.classList.remove("success-group");
     interestsGroup.classList.remove("success-group");
 
     charCounter.textContent = "255 caractères restants";
 });
+
+
+
+const savedProfile = localStorage.getItem("userProfile");
+
+if (savedProfile) {
+    const profile = JSON.parse(savedProfile);
+    createProfileCard(profile);
+}
